@@ -7,6 +7,11 @@ import os
 from datetime import datetime, timedelta
 import base64
 
+# 临时方案：忽略目标站点的 HTTPS 证书校验（证书过期会导致 workflow 直接失败）
+# 注意：这会降低安全性，建议后续替换为可控域名或修复证书后再开启校验。
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 def _0x1a2b():
     if os.environ.get('CONFIG'):
         return json.loads(os.environ.get('CONFIG'))
@@ -16,6 +21,8 @@ def _0x1a2b():
 _0x3c4d = _0x1a2b()
 _0x5e6f = base64.b64decode('aHR0cHM6Ly92cHMucG9sYXJiZWFyLm55Yy5tbg==').decode()
 _0x7g8h = requests.Session()
+# 临时方案：忽略 HTTPS 证书校验（用于绕过对方站点证书过期问题）
+_0x7g8h.verify = False
 _0x7g8h.headers.update({
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36",
     "Accept-Language": "zh-CN,zh;q=0.9",
@@ -71,6 +78,8 @@ def _0x7q8r(_0xd):
 
 def _0x9s0t(_0x14):
     try:
+        # 运行计划：最少间隔 2 天，最多间隔 4 天
+        # 每次运行都会随机一个间隔，并写回 workflow 的 cron
         if not _0x14:
             _0x15 = datetime.now() + timedelta(days=7)
             _0x16 = 7
@@ -78,12 +87,7 @@ def _0x9s0t(_0x14):
             _0x15 = datetime.strptime(_0x14, "%Y-%m-%d")
             _0x16 = (_0x15 - datetime.now()).days
         
-        if _0x16 <= 3:
-            _0x17 = 1
-        elif _0x16 <= 7:
-            _0x17 = 2
-        else:
-            _0x17 = max(1, min(7, _0x16 // 4))
+        _0x17 = random.randint(2, 4)
         
         _0x18 = random.randint(6, 22)
         _0x19 = random.randint(0, 59)
