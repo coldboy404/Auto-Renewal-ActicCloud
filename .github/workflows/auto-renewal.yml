@@ -2,7 +2,7 @@ name: ArcticCloud Auto Renewal
 
 on:
   schedule:
-    - cron: '1 10 */2 * *'
+    - cron: '56 10 */4 * *'
   
   # 允许手动触发
   workflow_dispatch:
